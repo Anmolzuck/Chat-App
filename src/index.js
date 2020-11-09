@@ -14,17 +14,16 @@ const publicDirectoryPath = path.join(__dirname, "../public");
 
 app.use(express.static(publicDirectoryPath));
 
-let count = 0;
+const msg = "Welcome to River 😉";
+
 //This event will be fired when a new socket connection is made
 io.on("connection", (socket) => {
   console.log("New socket connection established");
 
-  socket.emit("countUpdated", count);
+  socket.emit("welcome", msg);
 
-  socket.on("update", () => {
-    count++;
-    // socket.emit("countUpdated", count);
-    io.emit("countUpdated", count); // this emitts event for all socket connections
+  socket.on("sendMessage", (message) => {
+    io.emit("welcome", message); // this emitts event for all socket connections
   });
 });
 
