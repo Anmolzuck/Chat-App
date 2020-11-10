@@ -1,6 +1,6 @@
 const socket = io();
 
-socket.on("welcome", (msg) => {
+socket.on("message", (msg) => {
   console.log(msg);
 });
 
