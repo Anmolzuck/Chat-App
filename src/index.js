@@ -3,6 +3,7 @@ const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 const Filter = require("bad-words");
+const { generateMessage } = require("./utils/message");
 
 const app = express();
 const server = http.createServer(app);
@@ -19,9 +20,9 @@ app.use(express.static(publicDirectoryPath));
 io.on("connection", (socket) => {
   console.log("New socket connection established");
 
-  socket.emit("message", "Welcome to River 😉");
+  socket.emit("message", generateMessage("Welcome to River 😉"));
 
-  socket.broadcast.emit("message", "A new user has joined!");
+  socket.broadcast.emit("message", generateMessage("A new user has joined!"));
 
   socket.on("sendMessage", (message, callback) => {
     //Checking for bad words
@@ -30,13 +31,13 @@ io.on("connection", (socket) => {
     if (filter.isProfane(message)) {
       return callback("Bad words not allowed!");
     }
-    io.emit("message", message); // this emitts event for all socket connections
+    io.emit("message", generateMessage(message)); // this emitts event for all socket connections
     callback();
   });
 
   socket.on("sendLocation", (location, callback) => {
     io.emit(
-      "message",
+      "locationMessage",
       `https://www.google.com/maps?q=${location.latitude},${location.longitude}`
     );
     callback();
@@ -44,7 +45,7 @@ io.on("connection", (socket) => {
 
   //This event will work when a user leaves
   socket.on("disconnect", () => {
-    io.emit("message", "A user has left!");
+    io.emit("message", generateMessage("A user has left!"));
   });
 });
 
