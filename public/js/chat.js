@@ -9,7 +9,14 @@ document.getElementById("message-form").addEventListener("submit", (e) => {
 
   const message = e.target.elements.message.value;
 
-  socket.emit("sendMessage", message);
+  //Also sneding a acknowledgement when message received
+  socket.emit("sendMessage", message, (error) => {
+    if (error) {
+      return console.log(error);
+    }
+
+    console.log("Message delivered");
+  });
 });
 
 document.querySelector("#send-location").addEventListener("click", (e) => {
