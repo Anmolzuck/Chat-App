@@ -20,9 +20,15 @@ app.use(express.static(publicDirectoryPath));
 io.on("connection", (socket) => {
   console.log("New socket connection established");
 
-  socket.emit("message", generateMessage("Welcome to River 😉"));
+  //Creating a room
+  socket.on("join", ({ username, room }) => {
+    socket.join(room);
 
-  socket.broadcast.emit("message", generateMessage("A new user has joined!"));
+    socket.emit("message", generateMessage("Welcome to River 😉"));
+    socket.broadcast
+      .to(room)
+      .emit("message", generateMessage(`${username} has joined!`));
+  });
 
   socket.on("sendMessage", (message, callback) => {
     //Checking for bad words
