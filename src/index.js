@@ -34,11 +34,12 @@ io.on("connection", (socket) => {
     callback();
   });
 
-  socket.on("sendLocation", (location) => {
+  socket.on("sendLocation", (location, callback) => {
     io.emit(
       "message",
       `https://www.google.com/maps?q=${location.latitude},${location.longitude}`
     );
+    callback();
   });
 
   //This event will work when a user leaves
