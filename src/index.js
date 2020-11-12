@@ -24,7 +24,7 @@ app.use(express.static(publicDirectoryPath));
 
 //This event will be fired when a new socket connection is made
 io.on("connection", (socket) => {
-  console.log("New socket connection established");
+  //console.log("New socket connection established");
 
   //Creating a room
   socket.on("join", ({ username, room }, callback) => {
@@ -100,5 +100,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(port, () => {
-  console.log(`listening on port ${port}!`);
+  //console.log(`listening on port ${port}!`);
 });
