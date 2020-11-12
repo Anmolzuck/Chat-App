@@ -37,7 +37,13 @@ io.on("connection", (socket) => {
 
     socket.join(user.room);
 
-    socket.emit("message", generateMessage("Zucknet", "Welcome to River 😉"));
+    socket.emit(
+      "message",
+      generateMessage(
+        "Zucknet",
+        "Welcome to River🔥 Don't ever try to leave the chat without permission!!"
+      )
+    );
     socket.broadcast
       .to(user.room)
       .emit("message", generateMessage(`${user.username} has joined!`));
@@ -54,11 +60,11 @@ io.on("connection", (socket) => {
     const user = getUser(socket.id);
 
     //Checking for bad words
-    const filter = new Filter();
+    // const filter = new Filter();
 
-    if (filter.isProfane(message)) {
-      return callback("Bad words not allowed!");
-    }
+    // if (filter.isProfane(message)) {
+    //   return callback("Bad words not allowed!");
+    // }
     io.to(user.room).emit("message", generateMessage(user.username, message)); // this emitts event for all socket connections
     callback();
   });
