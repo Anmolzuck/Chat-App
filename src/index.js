@@ -4,6 +4,12 @@ const express = require("express");
 const socketio = require("socket.io");
 const Filter = require("bad-words");
 const { generateMessage, generateLocationMessage } = require("./utils/message");
+const {
+  addUser,
+  removeUser,
+  getUser,
+  getUsersInRoom,
+} = require("./utils/users");
 
 const app = express();
 const server = http.createServer(app);
@@ -21,30 +27,43 @@ io.on("connection", (socket) => {
   console.log("New socket connection established");
 
   //Creating a room
-  socket.on("join", ({ username, room }) => {
-    socket.join(room);
+  socket.on("join", ({ username, room }, callback) => {
+    //Adding user to users array and
+    const { error, user } = addUser({ id: socket.id, username, room });
 
-    socket.emit("message", generateMessage("Welcome to River 😉"));
+    if (error) {
+      return callback(error);
+    }
+
+    socket.join(user.room);
+
+    socket.emit("message", generateMessage("Zucknet", "Welcome to River 😉"));
     socket.broadcast
-      .to(room)
-      .emit("message", generateMessage(`${username} has joined!`));
+      .to(user.room)
+      .emit("message", generateMessage(`${user.username} has joined!`));
+
+    callback();
   });
 
   socket.on("sendMessage", (message, callback) => {
+    const user = getUser(socket.id);
+
     //Checking for bad words
     const filter = new Filter();
 
     if (filter.isProfane(message)) {
       return callback("Bad words not allowed!");
     }
-    io.emit("message", generateMessage(message)); // this emitts event for all socket connections
+    io.to(user.room).emit("message", generateMessage(user.username, message)); // this emitts event for all socket connections
     callback();
   });
 
   socket.on("sendLocation", (location, callback) => {
-    io.emit(
+    const user = getUser(socket.id);
+    io.to(user.room).emit(
       "locationMessage",
       generateLocationMessage(
+        user.username,
         `https://www.google.com/maps?q=${location.latitude},${location.longitude}`
       )
     );
@@ -53,7 +72,14 @@ io.on("connection", (socket) => {
 
   //This event will work when a user leaves
   socket.on("disconnect", () => {
-    io.emit("message", generateMessage("A user has left!"));
+    const user = removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit(
+        "message",
+        generateMessage(`${user.username} has left!`)
+      );
+    }
   });
 });
 
