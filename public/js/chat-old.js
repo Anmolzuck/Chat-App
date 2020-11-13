@@ -9,8 +9,7 @@ const $messages = document.querySelector("#messages");
 
 //Template
 const messageTemplate = document.querySelector("#message-template").innerHTML;
-const locationTemplate = document.querySelector("#location-message-template")
-  .innerHTML;
+const locationTemplate = document.querySelector("#location-template").innerHTML;
 const sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
 
 //Options
