@@ -31,9 +31,8 @@ io.on("connection", (socket) => {
     //Adding user to users array and
     const { error, user } = addUser({ id: socket.id, username, room });
 
-    if (error) {
-      return callback(error);
-    }
+    if (error) return callback(error);
+    
 
     socket.join(user.room);
 
